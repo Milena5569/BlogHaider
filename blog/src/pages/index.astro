@@ -1,13 +1,29 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PostCard from "../components/PostCard.astro";
----
-<BaseLayout>
-  <h2 class="text-3xl font-bold mb-4">
-    Bem-vindo ao blog
-  </h2>
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getPosts } from '../lib/api.js'
 
-  <p>
-    Aqui aparecerão os posts mais recentes.
-  </p>
+type Post = {
+  id: string
+  title: string
+  slug: string
+}
+
+const posts: Post[] = await getPosts()
+---
+
+<BaseLayout>
+  <h2 class="text-3xl font-bold mb-4">Bem-vindo ao blog</h2>
+  <p class="mb-8">Aqui aparecerão os posts mais recentes.</p>
+
+  {posts.length === 0 ? (
+    <p>Nenhum post encontrado.</p>
+  ) : (
+    <ul>
+      {posts.map((post) => (
+        <li>
+          <a href={`/post/${post.slug}`}>{post.title}</a>
+        </li>
+      ))}
+    </ul>
+  )}
 </BaseLayout>
