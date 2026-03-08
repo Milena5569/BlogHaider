@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AuthorCard from "../../components/AuthorCard.astro";
+import TagList from "../../components/TagList.astro";
+import LikeButton from "../../components/LikeButton.jsx";
+import CommentSection from "../../components/CommentSection.jsx";
+import { getPosts, getPostBySlug } from "../../lib/api.js";
+import PostViewTracker from "../../components/PostViewTracker.jsx";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+
+  return posts.map((post: any) => ({
+    params: { slug: post.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const post: any = await getPostBySlug(slug);
+
+if (!post) {
+  throw new Error("Post não encontrado");
+}
+
+const authorName =
+  typeof post.author === "object" && post.author?.name
+    ? post.author.name
+    : "Autor";
+
+const authorBio =
+  typeof post.author === "object" && post.author?.bio
+    ? post.author.bio
+    : "";
+
+const tagNames = Array.isArray(post.tags)
+  ? post.tags.map((tag: any) =>
+      typeof tag === "object" && tag?.name ? tag.name : String(tag)
+    )
+  : [];
+
+const content =
+  post?.content?.root?.children
+    ?.map((block: any) =>
+      block?.children?.map((child: any) => child?.text || "").join("") || ""
+    )
+    .join("\n\n") || "";
+---
+
+<BaseLayout>
+  <article>
+    <h1 class="text-3xl font-bold mb-6">{post.title}</h1>
+
+    <p class="mb-6">{content}</p>
+
+    <TagList tags={tagNames} />
+
+    <div class="mt-6">
+      <AuthorCard
+        name={authorName}
+        bio={authorBio}
+      />
+    </div>
+
+    <LikeButton slug={post.slug} client:load />
+    <CommentSection slug={post.slug} client:load />
+    <PostViewTracker slug={post.slug} client:load />
+  </article>
+</BaseLayout>

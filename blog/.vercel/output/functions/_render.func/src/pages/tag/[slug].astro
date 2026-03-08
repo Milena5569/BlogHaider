@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getTags, getTagBySlug, getPosts } from "../../lib/api.js";
+
+export async function getStaticPaths() {
+  const tags = await getTags();
+
+  return tags.map((tag: any) => ({
+    params: { slug: tag.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const tag: any = await getTagBySlug(slug);
+
+if (!tag) {
+  throw new Error("Tag não encontrada");
+}
+
+const posts: any[] = await getPosts();
+
+const filteredPosts = posts.filter((post: any) => {
+  if (!Array.isArray(post.tags)) return false;
+
+  return post.tags.some((item: any) => {
+    if (typeof item === "object") {
+      return item.slug === slug;
+    }
+
+    return false;
+  });
+});
+---
+
+<BaseLayout>
+  <h1 class="text-3xl font-bold mb-6">Tag: {tag.name}</h1>
+
+  {filteredPosts.length === 0 ? (
+    <p>Nenhum post encontrado com esta tag.</p>
+  ) : (
+    <ul>
+      {filteredPosts.map((post: any) => (
+        <li class="mb-2">
+          <a href={`/post/${post.slug}`}>{post.title}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>
