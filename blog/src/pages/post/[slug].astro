@@ -4,12 +4,20 @@ import AuthorCard from "../../components/AuthorCard.astro";
 import TagList from "../../components/TagList.astro";
 import LikeButton from "../../components/LikeButton.jsx";
 import CommentSection from "../../components/CommentSection.jsx";
+
+export async function getStaticPaths() {
+  return [
+    { params: { slug: "primeiro-post" } },
+    { params: { slug: "segundo-post" } }
+  ];
+}
+const { slug } = Astro.params;
 ---
 
 <BaseLayout>
 
   <h1 class="text-3xl font-bold mb-6">
-    Título do Post
+    Post: {slug}
   </h1>
 
   <p class="mb-6">
