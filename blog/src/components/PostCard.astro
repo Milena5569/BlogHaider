@@ -1,0 +1,17 @@
+---
+const { title, excerpt, slug } = Astro.props;
+---
+
+<article class="border rounded-lg p-4 bg-white shadow">
+  
+  <h2 class="text-xl font-bold mb-2">
+    <a href={`/post/${slug}`}>
+      {title}
+    </a>
+  </h2>
+
+  <p class="text-gray-600">
+    {excerpt}
+  </p>
+
+</article>

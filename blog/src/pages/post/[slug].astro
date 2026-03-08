@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AuthorCard from "../../components/AuthorCard.astro";
+import TagList from "../../components/TagList.astro";
+import LikeButton from "../../components/LikeButton.jsx";
+import CommentSection from "../../components/CommentSection.jsx";
+---
+
+<BaseLayout>
+
+  <h1 class="text-3xl font-bold mb-6">
+    Título do Post
+  </h1>
+
+  <p class="mb-6">
+    Conteúdo do post...
+  </p>
+
+  <TagList tags={["astro", "javascript", "blog"]} />
+
+  <div class="mt-6">
+    <AuthorCard
+      name="João"
+      bio="Desenvolvedor frontend"
+    />
+  </div>
+
+  <LikeButton client:load />
+
+  <CommentSection client:load />
+
+</BaseLayout>

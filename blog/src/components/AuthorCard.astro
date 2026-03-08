@@ -1,0 +1,14 @@
+---
+const { name, bio } = Astro.props;
+---
+
+<div class="flex gap-4 items-center border p-4 rounded bg-gray-50">
+
+  <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+
+  <div>
+    <p class="font-semibold">{name}</p>
+    <p class="text-sm text-gray-600">{bio}</p>
+  </div>
+
+</div>
