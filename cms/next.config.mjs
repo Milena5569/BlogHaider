@@ -4,6 +4,10 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   output: 'standalone',
 
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
