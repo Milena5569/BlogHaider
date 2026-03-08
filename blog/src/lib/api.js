@@ -1,4 +1,5 @@
-const CMS_URL = 'http://localhost:3000/api'
+const CMS_BASE_URL = import.meta.env.PUBLIC_PAYLOAD_URL
+const CMS_URL = `${CMS_BASE_URL}/api`
 
 export async function getPosts() {
   const res = await fetch(`${CMS_URL}/posts?depth=2&limit=100`)
