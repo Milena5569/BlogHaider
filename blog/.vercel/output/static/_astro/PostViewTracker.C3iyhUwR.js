@@ -1,1 +1,0 @@
-import{r}from"./index.DiEladB3.js";import{t as e}from"./analytics.knf5wh4O.js";import"./supabase.D_CsuZYY.js";function i({slug:t}){return r.useEffect(()=>{e("post_view",t)},[t]),null}export{i as default};

@@ -1,1 +1,0 @@
-import{s as e}from"./supabase.D_CsuZYY.js";async function n(r,t=null,s={}){const{error:o}=await e.from("events").insert({event_type:r,post_slug:t,metadata:s});o&&console.error(`Erro ao registrar evento ${r}:`,o)}export{n as t};
