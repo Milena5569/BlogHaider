@@ -1,0 +1,166 @@
+---
+interface Props {
+  title?: string;
+  posts?: any[];
+}
+
+const {
+  title = "Mais conteúdos em destaque",
+  posts = [],
+} = Astro.props;
+
+const items = posts.slice(0, 4);
+
+const getCover = (post: any) => {
+  if (typeof post?.coverImage === "object" && post?.coverImage?.url) {
+    return `${(import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000").replace(/\/$/, "")}${post.coverImage.url}`;
+  }
+
+  return "/images/placeholder.png";
+};
+---
+
+<section class="more-editorial">
+  <div class="container">
+    <div class="more-editorial__header">
+      <h2 class="more-editorial__title editorial-title">{title}</h2>
+    </div>
+
+    {items.length === 0 ? (
+      <div class="more-editorial__empty panel">
+        <p>Nenhum conteúdo disponível no momento.</p>
+      </div>
+    ) : (
+      <div class="more-editorial__grid">
+        {items.map((post: any) => (
+          <article class="more-editorial__card">
+            <a href={`/post/${post.slug}`} class="more-editorial__image-link">
+              <img
+                src={getCover(post)}
+                alt={post.title}
+                class="more-editorial__image"
+              />
+            </a>
+
+            <div class="more-editorial__content">
+              <h3 class="more-editorial__card-title">
+                <a href={`/post/${post.slug}`}>{post.title}</a>
+              </h3>
+
+              <p class="more-editorial__excerpt">
+                {post.excerpt || "Leia mais sobre TDAH, saúde mental e funcionamento cotidiano."}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .more-editorial {
+    background: #07080b;
+    padding: 0 0 56px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .more-editorial__header {
+    padding: 18px 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .more-editorial__title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1;
+    color: #f5f1ed;
+  }
+
+  .more-editorial__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .more-editorial__card {
+    background: #07080b;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background var(--transition-fast);
+  }
+
+  .more-editorial__card:first-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .more-editorial__card:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .more-editorial__image-link {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .more-editorial__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base);
+  }
+
+  .more-editorial__card:hover .more-editorial__image {
+    transform: scale(1.04);
+  }
+
+  .more-editorial__content {
+    padding: 16px 16px 24px;
+  }
+
+  .more-editorial__card-title {
+    margin: 0 0 12px;
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 2.2vw, 2.6rem);
+    line-height: 0.96;
+    font-weight: 700;
+    color: #f5f1ed;
+  }
+
+  .more-editorial__card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .more-editorial__excerpt {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .more-editorial__empty {
+    margin-top: 20px;
+    padding: 24px;
+  }
+
+  @media (max-width: 1100px) {
+    .more-editorial__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .more-editorial__card:nth-child(2n + 1) {
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .more-editorial__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .more-editorial__card {
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+</style>

@@ -18,7 +18,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-
 const post: any = await getPostBySlug(slug);
 
 if (!post) {
@@ -26,29 +25,10 @@ if (!post) {
 }
 
 const authorName =
-  typeof post.author === "object" && post.author?.name
-    ? post.author.name
-    : "Autor";
+  typeof post.author === "object" && post.author?.name ? post.author.name : "Autor";
 
 const authorBio =
-  typeof post.author === "object" && post.author?.bio
-    ? post.author.bio
-    : "";
-
-const authorSlug =
-  typeof post.author === "object" && post.author?.slug
-    ? post.author.slug
-    : null;
-
-const categoryName =
-  typeof post.category === "object" && post.category?.name
-    ? post.category.name
-    : "Sem categoria";
-
-const categorySlug =
-  typeof post.category === "object" && post.category?.slug
-    ? post.category.slug
-    : null;
+  typeof post.author === "object" && post.author?.bio ? post.author.bio : "";
 
 const tagNames: string[] = Array.isArray(post.tags)
   ? post.tags.map((tag: any) =>
@@ -59,7 +39,7 @@ const tagNames: string[] = Array.isArray(post.tags)
 const coverImageUrl =
   typeof post.coverImage === "object" && post.coverImage?.url
     ? `${(import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000").replace(/\/$/, "")}${post.coverImage.url}`
-    : null;
+    : "/images/placeholder.png";
 
 const publishedDate =
   post?.publishedDate
@@ -76,51 +56,143 @@ const content =
 ---
 
 <BaseLayout title={post.title}>
-  <article class="max-w-3xl mx-auto">
+  <article class="post-page">
+    <section class="post-hero">
+      <div class="container post-hero__grid">
+        <div class="post-hero__content">
+          <p class="post-hero__eyebrow">Artigo</p>
+          <h1 class="post-hero__title editorial-title">{post.title}</h1>
 
-    <h1 class="text-3xl font-bold mb-4">{post.title}</h1>
+          <div class="post-hero__meta">
+            {publishedDate && <span>{publishedDate}</span>}
+            <span>•</span>
+            <span>{authorName}</span>
+          </div>
+        </div>
 
-    <div class="text-sm text-gray-600 mb-6 space-y-1">
-      {publishedDate && <p><strong>Publicado em:</strong> {publishedDate}</p>}
+        <div class="post-hero__image-wrap">
+          <img src={coverImageUrl} alt={post.title} class="post-hero__image" />
+        </div>
+      </div>
+    </section>
 
-      <p>
-        <strong>Autor:</strong>{" "}
-        {authorSlug ? <a href={`/autor/${authorSlug}`}>{authorName}</a> : authorName}
-      </p>
+    <section class="post-body section-spacing">
+      <div class="container post-body__grid">
+        <div class="post-body__main">
+          <div class="post-body__content panel">
+            <div class="post-prose">
+              {content || "Conteúdo não disponível."}
+            </div>
+          </div>
 
-      <p>
-        <strong>Categoria:</strong>{" "}
-        {categorySlug ? (
-          <a href={`/categoria/${categorySlug}`}>{categoryName}</a>
-        ) : (
-          categoryName
-        )}
-      </p>
-    </div>
+          {tagNames.length > 0 && (
+            <div class="post-body__tags panel">
+              <TagList tags={tagNames} />
+            </div>
+          )}
 
-    {coverImageUrl && (
-      <img
-        src={coverImageUrl}
-        alt={post.title}
-        class="w-full h-auto rounded-lg mb-6"
-      />
-    )}
+          <div class="post-body__interactions panel">
+            <LikeButton slug={post.slug} client:load />
+          </div>
 
-    <div class="prose max-w-none mb-6 whitespace-pre-line">
-      {content || "Conteúdo não disponível."}
-    </div>
+          <div class="post-body__comments panel">
+            <CommentSection slug={post.slug} client:load />
+          </div>
 
-    {tagNames.length > 0 && <TagList tags={tagNames} />}
+          <PostViewTracker slug={post.slug} client:load />
+        </div>
 
-    <div class="mt-8">
-      <AuthorCard name={authorName} bio={authorBio} />
-    </div>
-
-    <div class="mt-8 space-y-6">
-      <LikeButton slug={post.slug} client:load />
-      <CommentSection slug={post.slug} client:load />
-      <PostViewTracker slug={post.slug} client:load />
-    </div>
-
+        <aside class="post-body__sidebar">
+          <div class="panel post-body__author-panel">
+            <AuthorCard name={authorName} bio={authorBio} />
+          </div>
+        </aside>
+      </div>
+    </section>
   </article>
 </BaseLayout>
+
+<style>
+  .post-hero {
+    padding: 42px 0 28px;
+    background:
+      radial-gradient(circle at top right, rgba(138, 92, 246, 0.18), transparent 26%),
+      linear-gradient(180deg, rgba(19, 10, 28, 0.92), rgba(11, 7, 18, 0.98));
+  }
+
+  .post-hero__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items: end;
+  }
+
+  .post-hero__eyebrow {
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--lilac);
+  }
+
+  .post-hero__title {
+    margin: 0 0 16px;
+    font-size: clamp(2.8rem, 5vw, 4.8rem);
+    line-height: 0.94;
+  }
+
+  .post-hero__meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: var(--text-soft);
+    font-weight: 600;
+  }
+
+  .post-hero__image-wrap {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .post-hero__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .post-body__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .post-body__main {
+    display: grid;
+    gap: 20px;
+  }
+
+  .post-body__content,
+  .post-body__tags,
+  .post-body__interactions,
+  .post-body__comments,
+  .post-body__author-panel {
+    padding: 22px;
+  }
+
+  .post-prose {
+    white-space: pre-line;
+    line-height: 1.75;
+    font-size: 1.08rem;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 980px) {
+    .post-hero__grid,
+    .post-body__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

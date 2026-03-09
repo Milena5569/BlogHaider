@@ -1,31 +1,39 @@
 ---
 import "../styles/global.css";
-import Header from "../components/Header.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "VivaTDAH",
+  description = "Blog editorial sobre TDAH, saúde mental, ciência e autoconhecimento.",
+} = Astro.props;
 ---
 
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Meu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0712" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
 
-  <body class="bg-gray-100 text-gray-900">
+  <body>
+  <div class="site-shell">
+    <SiteHeader />
 
-    <header class="bg-white shadow p-4">   
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-2xl font-bold">Meu Blog</h1> 
-      </div>
-    </header> 
-
-    <main class="max-w-4xl mx-auto p-6">
+    <main class="site-main">
       <slot />
     </main>
 
-    <footer class="bg-white border-t p-4 text-center text-sm text-gray-500">
-      © 2026 Meu Blog
-    </footer>
-
-  </body>
+    <Footer />
+  </div>
+</body>
 </html>

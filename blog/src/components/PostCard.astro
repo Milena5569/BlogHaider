@@ -1,17 +1,99 @@
 ---
-const { title, excerpt, slug } = Astro.props;
+const { post } = Astro.props;
+
+const coverImage =
+  typeof post?.coverImage === "object" && post?.coverImage?.url
+    ? `${(import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000").replace(/\/$/, "")}${post.coverImage.url}`
+    : "/images/placeholder.png";
+
+const publishedDate = post?.publishedDate
+  ? new Date(post.publishedDate).toLocaleDateString("pt-BR")
+  : null;
+
+const categoryName =
+  typeof post?.category === "object" && post?.category?.name
+    ? post.category.name
+    : "Editorial";
 ---
 
-<article class="border rounded-lg p-4 bg-white shadow">
-  
-  <h2 class="text-xl font-bold mb-2">
-    <a href={`/post/${slug}`}>
-      {title}
-    </a>
-  </h2>
+<article class="post-card zoom-hover">
+  <a href={`/post/${post.slug}`} class="post-card__image-link">
+    <img src={coverImage} alt={post.title} class="post-card__image" />
+  </a>
 
-  <p class="text-gray-600">
-    {excerpt}
-  </p>
+  <div class="post-card__content">
+    <p class="post-card__meta">
+      <span>{categoryName}</span>
+      {publishedDate && <span>• {publishedDate}</span>}
+    </p>
 
+    <h3 class="post-card__title editorial-title">
+      <a href={`/post/${post.slug}`}>{post.title}</a>
+    </h3>
+
+    <p class="post-card__excerpt">
+      {post?.excerpt || "Uma leitura editorial sobre TDAH, rotina, regulação emocional e autoconhecimento."}
+    </p>
+  </div>
 </article>
+
+<style>
+  .post-card {
+    background: rgba(13, 10, 20, 0.92);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .post-card__image-link {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+
+  .post-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base), filter var(--transition-base);
+  }
+
+  .post-card:hover .post-card__image {
+    transform: scale(1.04);
+    filter: brightness(1.03);
+  }
+
+  .post-card__content {
+    padding: 18px 18px 20px;
+  }
+
+  .post-card__meta {
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .post-card__title {
+    margin: 0 0 12px;
+    font-size: clamp(1.6rem, 2vw, 2.25rem);
+    line-height: 0.98;
+  }
+
+  .post-card__title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .post-card__excerpt {
+    margin: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+    font-size: 1rem;
+  }
+</style>

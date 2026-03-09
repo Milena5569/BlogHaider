@@ -1,3 +1,221 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+--header-height: 76px;
+  --bg: #0b0712;
+  --bg-elevated: #140d1d;
+  --panel: #1b1127;
+  --panel-2: #241534;
+
+  --purple-deep: #3c1f52;
+  --purple: #5d2f7a;
+  --violet: #8a5cf6;
+  --lilac: #c7a6ff;
+  --lilac-soft: #eadcff;
+
+  --text: #fff8ff;
+  --text-soft: #dfd1f2;
+  --text-muted: #bcaed0;
+
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.26);
+
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+  --container: 1200px;
+  --radius: 18px;
+  --radius-sm: 12px;
+
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: Inter, Arial, Helvetica, sans-serif;
+
+  --transition-fast: 180ms ease;
+  --transition-base: 260ms ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(138, 92, 246, 0.08), transparent 24%),
+    radial-gradient(circle at top right, rgba(199, 166, 255, 0.06), transparent 22%),
+    linear-gradient(180deg, #0b0712 0%, #120a19 100%);
+  color: var(--text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+a:hover {
+  color: var(--lilac);
+}
+
+main {
+  width: 100%;
+}
+
+.container {
+  width: min(100% - 40px, var(--container));
+  margin-inline: auto;
+}
+
+.editorial-title {
+  font-family: var(--font-serif);
+  letter-spacing: -0.04em;
+}
+
+.editorial-subtitle {
+  font-family: var(--font-serif);
+  line-height: 1.08;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(36, 21, 52, 0.88), rgba(20, 13, 29, 0.92));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.nav-pill,
+.button-editorial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.nav-pill:hover,
+.button-editorial:hover {
+  transform: scale(1.03);
+  border-color: var(--lilac-soft);
+  background: rgba(199, 166, 255, 0.08);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+}
+
+.zoom-hover {
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-fast);
+}
+
+.zoom-hover:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-soft {
+  color: var(--text-soft);
+}
+
+.section-spacing {
+  padding-block: 72px;
+}
+
+.site-main {
+  padding-top: var(--header-height);
+}
+
+.card-border {
+  border: 1px solid var(--border);
+}
+
+.editorial-surface {
+  background: linear-gradient(180deg, rgba(36, 21, 52, 0.88), rgba(20, 13, 29, 0.92));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.button-editorial,
+.nav-pill {
+  border-radius: 0;
+}
+
+.link-hover-line {
+  position: relative;
+}
+
+.link-hover-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-fast);
+}
+
+.link-hover-line:hover::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: min(100% - 24px, var(--container));
+  }
+
+  .section-spacing {
+    padding-block: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,29 +1,82 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { getPosts } from '../lib/api.js'
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroEditorial from "../components/HeroEditorial.astro";
+import EditorialHighlights from "../components/EditorialHighlights.astro";
+import { getPosts } from "../lib/api.js";
+import MoreEditorialGrid from "../components/MoreEditorialGrid.astro";
 
-type Post = {
-  id: string
-  title: string
-  slug: string
-}
+const posts: any[] = await getPosts();
+const latestPost: any = posts[0] || null;
 
-const posts: Post[] = await getPosts()
+const heroTitle = latestPost?.title || "VivaTDAH";
+const heroSubtitle =
+  "Conteúdo editorial sobre TDAH, funcionamento mental, regulação emocional, rotina e autoconhecimento.";
+
+const heroDate = latestPost?.publishedDate
+  ? `Publicado em ${new Date(latestPost.publishedDate).toLocaleDateString("pt-BR")}`
+  : "Publicado recentemente";
+
+const heroHref = latestPost?.slug ? `/post/${latestPost.slug}` : "/";
 ---
 
-<BaseLayout>
-  <h2 class="text-3xl font-bold mb-4">Bem-vindo ao blog</h2>
-  <p class="mb-8">Aqui aparecerão os posts mais recentes.</p>
+<BaseLayout
+  title="VivaTDAH"
+  description="Conteúdo editorial sobre TDAH, saúde mental, ciência e autoconhecimento."
+>
+  <HeroEditorial
+    title={heroTitle}
+    subtitle={heroSubtitle}
+    date={heroDate}
+    badgeText="destaque editorial"
+    ctaLabel="Ler última publicação"
+    ctaHref={heroHref}
+  />
 
-  {posts.length === 0 ? (
-    <p>Nenhum post encontrado.</p>
-  ) : (
-    <ul>
-      {posts.map((post) => (
-        <li>
-          <a href={`/post/${post.slug}`}>{post.title}</a>
-        </li>
-      ))}
-    </ul>
-  )}
+  <EditorialHighlights posts={posts} />
+
+  <MoreEditorialGrid
+    title="Mais conteúdos em destaque"
+    posts={posts.slice(1, 5)}
+  />
 </BaseLayout>
+<style>
+  .home-section__intro {
+    margin-bottom: 28px;
+    max-width: 760px;
+  }
+
+  .home-section__eyebrow {
+    margin: 0 0 12px;
+    color: var(--lilac);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .home-section__title {
+    margin: 0 0 12px;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1;
+  }
+
+  .home-section__text {
+    margin: 0;
+    font-size: 1.05rem;
+    max-width: 640px;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .home-grid__item {
+    height: 100%;
+  }
+
+  .home-empty {
+    padding: 28px;
+  }
+</style>
