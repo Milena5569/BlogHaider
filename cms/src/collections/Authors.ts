@@ -25,9 +25,8 @@ export const Authors: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'avatar',
-      type: 'upload',
-      relationTo: 'media',
+      name: 'email',
+      type: 'email',
     },
   ],
 }

@@ -4,22 +4,25 @@ import AuthorCard from "../../components/AuthorCard.astro";
 import TagList from "../../components/TagList.astro";
 import LikeButton from "../../components/LikeButton.jsx";
 import CommentSection from "../../components/CommentSection.jsx";
-import { getPosts, getPostBySlug } from "../../lib/api.js";
 import PostViewTracker from "../../components/PostViewTracker.jsx";
+import { getPosts, getPostBySlug } from "../../lib/api.js";
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const posts: any[] = await getPosts();
 
-  return posts.map((post: any) => ({
-    params: { slug: post.slug },
-  }));
+  return posts
+    .filter((post: any) => post?.slug)
+    .map((post: any) => ({
+      params: { slug: post.slug },
+    }));
 }
 
 const { slug } = Astro.params;
+
 const post: any = await getPostBySlug(slug);
 
 if (!post) {
-  throw new Error("Post não encontrado");
+  return Astro.redirect("/404");
 }
 
 const authorName =
@@ -32,37 +35,92 @@ const authorBio =
     ? post.author.bio
     : "";
 
-const tagNames = Array.isArray(post.tags)
+const authorSlug =
+  typeof post.author === "object" && post.author?.slug
+    ? post.author.slug
+    : null;
+
+const categoryName =
+  typeof post.category === "object" && post.category?.name
+    ? post.category.name
+    : "Sem categoria";
+
+const categorySlug =
+  typeof post.category === "object" && post.category?.slug
+    ? post.category.slug
+    : null;
+
+const tagNames: string[] = Array.isArray(post.tags)
   ? post.tags.map((tag: any) =>
       typeof tag === "object" && tag?.name ? tag.name : String(tag)
     )
   : [];
+
+const coverImageUrl =
+  typeof post.coverImage === "object" && post.coverImage?.url
+    ? `${(import.meta.env.PUBLIC_PAYLOAD_URL || "http://localhost:3000").replace(/\/$/, "")}${post.coverImage.url}`
+    : null;
+
+const publishedDate =
+  post?.publishedDate
+    ? new Date(post.publishedDate).toLocaleDateString("pt-BR")
+    : null;
 
 const content =
   post?.content?.root?.children
     ?.map((block: any) =>
       block?.children?.map((child: any) => child?.text || "").join("") || ""
     )
+    .filter(Boolean)
     .join("\n\n") || "";
 ---
 
-<BaseLayout>
-  <article>
-    <h1 class="text-3xl font-bold mb-6">{post.title}</h1>
+<BaseLayout title={post.title}>
+  <article class="max-w-3xl mx-auto">
 
-    <p class="mb-6">{content}</p>
+    <h1 class="text-3xl font-bold mb-4">{post.title}</h1>
 
-    <TagList tags={tagNames} />
+    <div class="text-sm text-gray-600 mb-6 space-y-1">
+      {publishedDate && <p><strong>Publicado em:</strong> {publishedDate}</p>}
 
-    <div class="mt-6">
-      <AuthorCard
-        name={authorName}
-        bio={authorBio}
-      />
+      <p>
+        <strong>Autor:</strong>{" "}
+        {authorSlug ? <a href={`/autor/${authorSlug}`}>{authorName}</a> : authorName}
+      </p>
+
+      <p>
+        <strong>Categoria:</strong>{" "}
+        {categorySlug ? (
+          <a href={`/categoria/${categorySlug}`}>{categoryName}</a>
+        ) : (
+          categoryName
+        )}
+      </p>
     </div>
 
-    <LikeButton slug={post.slug} client:load />
-    <CommentSection slug={post.slug} client:load />
-    <PostViewTracker slug={post.slug} client:load />
+    {coverImageUrl && (
+      <img
+        src={coverImageUrl}
+        alt={post.title}
+        class="w-full h-auto rounded-lg mb-6"
+      />
+    )}
+
+    <div class="prose max-w-none mb-6 whitespace-pre-line">
+      {content || "Conteúdo não disponível."}
+    </div>
+
+    {tagNames.length > 0 && <TagList tags={tagNames} />}
+
+    <div class="mt-8">
+      <AuthorCard name={authorName} bio={authorBio} />
+    </div>
+
+    <div class="mt-8 space-y-6">
+      <LikeButton slug={post.slug} client:load />
+      <CommentSection slug={post.slug} client:load />
+      <PostViewTracker slug={post.slug} client:load />
+    </div>
+
   </article>
 </BaseLayout>

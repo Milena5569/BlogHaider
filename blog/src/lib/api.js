@@ -3,7 +3,14 @@ const CMS_URL = `${CMS_BASE_URL}/api`
 
 async function fetchCMS(path) {
   try {
-    const res = await fetch(`${CMS_URL}${path}`)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+
+    const res = await fetch(`${CMS_URL}${path}`, {
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeout)
 
     if (!res.ok) {
       console.error(`CMS request failed: ${res.status} ${res.statusText} - ${path}`)
@@ -18,7 +25,7 @@ async function fetchCMS(path) {
 }
 
 export async function getPosts() {
-  const data = await fetchCMS('/posts?depth=2&limit=100')
+  const data = await fetchCMS('/posts?depth=2&limit=100&sort=-publishedDate')
   return data?.docs || []
 }
 
@@ -30,7 +37,7 @@ export async function getPostBySlug(slug) {
 }
 
 export async function getCategories() {
-  const data = await fetchCMS('/categories?limit=100')
+  const data = await fetchCMS('/categories?limit=100&sort=name')
   return data?.docs || []
 }
 
@@ -42,7 +49,7 @@ export async function getCategoryBySlug(slug) {
 }
 
 export async function getAuthors() {
-  const data = await fetchCMS('/authors?limit=100')
+  const data = await fetchCMS('/authors?limit=100&sort=name')
   return data?.docs || []
 }
 
@@ -54,7 +61,7 @@ export async function getAuthorBySlug(slug) {
 }
 
 export async function getTags() {
-  const data = await fetchCMS('/tags?limit=100')
+  const data = await fetchCMS('/tags?limit=100&sort=name')
   return data?.docs || []
 }
 

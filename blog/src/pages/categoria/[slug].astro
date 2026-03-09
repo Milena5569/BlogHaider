@@ -3,24 +3,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCategories, getCategoryBySlug, getPosts } from "../../lib/api.js";
 
 export async function getStaticPaths() {
-  const categories = await getCategories();
+  const categories: any[] = await getCategories();
 
-  return categories.map((category: any) => ({
-    params: { slug: category.slug },
-  }));
+  return categories
+    .filter((category: any) => category?.slug)
+    .map((category: any) => ({
+      params: { slug: category.slug },
+    }));
 }
 
 const { slug } = Astro.params;
+
 const category: any = await getCategoryBySlug(slug);
 
 if (!category) {
-  throw new Error("Categoria não encontrada");
+  return Astro.redirect("/404");
 }
 
 const posts: any[] = await getPosts();
 
 const filteredPosts = posts.filter((post: any) => {
-  if (!post.category) return false;
+  if (!post?.category) return false;
 
   if (typeof post.category === "object") {
     return post.category.slug === slug;
@@ -30,18 +33,26 @@ const filteredPosts = posts.filter((post: any) => {
 });
 ---
 
-<BaseLayout>
-  <h1 class="text-3xl font-bold mb-6">Categoria: {category.name}</h1>
+<BaseLayout title={`Categoria: ${category.name}`}>
+  <section class="max-w-3xl mx-auto">
 
-  {filteredPosts.length === 0 ? (
-    <p>Nenhum post encontrado nesta categoria.</p>
-  ) : (
-    <ul>
-      {filteredPosts.map((post: any) => (
-        <li class="mb-2">
-          <a href={`/post/${post.slug}`}>{post.title}</a>
-        </li>
-      ))}
-    </ul>
-  )}
+    <h1 class="text-3xl font-bold mb-6">
+      Categoria: {category.name}
+    </h1>
+
+    {filteredPosts.length === 0 ? (
+      <p>Nenhum post encontrado nesta categoria.</p>
+    ) : (
+      <ul class="space-y-3">
+        {filteredPosts.map((post: any) => (
+          <li>
+            <a href={`/post/${post.slug}`}>
+              {post.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+  </section>
 </BaseLayout>

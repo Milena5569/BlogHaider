@@ -7,10 +7,10 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Posts } from './collections/Posts'
 import { Authors } from './collections/Authors'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
-import { Posts } from './collections/Posts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,36 +22,15 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-
-  collections: [Users, Media, Authors, Categories, Tags, Posts],
-
+  collections: [Users, Media, Posts, Authors, Categories, Tags],
   editor: lexicalEditor(),
-
   secret: process.env.PAYLOAD_SECRET || '',
-
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
+    url: process.env.DATABASE_URL || '',
   }),
-
-  cors: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:4321',
-    'http://127.0.0.1:4321',
-  ],
-
-  csrf: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:4321',
-    'http://127.0.0.1:4321',
-  ],
-
   sharp,
-
   plugins: [],
 })

@@ -69,10 +69,10 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    posts: Post;
     authors: Author;
     categories: Category;
     tags: Tag;
-    posts: Post;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,10 +82,10 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
-    posts: PostsSelect<false> | PostsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -156,7 +156,6 @@ export interface User {
  */
 export interface Media {
   id: string;
-  alt: string;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -168,41 +167,6 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "authors".
- */
-export interface Author {
-  id: string;
-  name: string;
-  slug: string;
-  bio?: string | null;
-  avatar?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
- */
-export interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -232,6 +196,41 @@ export interface Post {
   tags?: (string | Tag)[] | null;
   coverImage?: (string | null) | Media;
   publishedDate: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "authors".
+ */
+export interface Author {
+  id: string;
+  name: string;
+  slug: string;
+  bio?: string | null;
+  email?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -268,6 +267,10 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
         relationTo: 'authors';
         value: string | Author;
       } | null)
@@ -278,10 +281,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tags';
         value: string | Tag;
-      } | null)
-    | ({
-        relationTo: 'posts';
-        value: string | Post;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -352,7 +351,6 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -367,13 +365,29 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  author?: T;
+  category?: T;
+  tags?: T;
+  coverImage?: T;
+  publishedDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "authors_select".
  */
 export interface AuthorsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   bio?: T;
-  avatar?: T;
+  email?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -394,22 +408,6 @@ export interface CategoriesSelect<T extends boolean = true> {
 export interface TagsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
- */
-export interface PostsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  content?: T;
-  author?: T;
-  category?: T;
-  tags?: T;
-  coverImage?: T;
-  publishedDate?: T;
   updatedAt?: T;
   createdAt?: T;
 }

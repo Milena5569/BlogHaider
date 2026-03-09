@@ -3,24 +3,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getAuthors, getAuthorBySlug, getPosts } from "../../lib/api.js";
 
 export async function getStaticPaths() {
-  const authors = await getAuthors();
+  const authors: any[] = await getAuthors();
 
-  return authors.map((author: any) => ({
-    params: { slug: author.slug },
-  }));
+  return authors
+    .filter((author: any) => author?.slug)
+    .map((author: any) => ({
+      params: { slug: author.slug },
+    }));
 }
 
 const { slug } = Astro.params;
+
 const author: any = await getAuthorBySlug(slug);
 
 if (!author) {
-  throw new Error("Autor não encontrado");
+  return Astro.redirect("/404");
 }
 
 const posts: any[] = await getPosts();
 
 const filteredPosts = posts.filter((post: any) => {
-  if (!post.author) return false;
+  if (!post?.author) return false;
 
   if (typeof post.author === "object") {
     return post.author.slug === slug;
@@ -30,19 +33,30 @@ const filteredPosts = posts.filter((post: any) => {
 });
 ---
 
-<BaseLayout>
-  <h1 class="text-3xl font-bold mb-2">Autor: {author.name}</h1>
-  <p class="mb-6">{author.bio}</p>
+<BaseLayout title={`Autor: ${author.name}`}>
+  <section class="max-w-3xl mx-auto">
 
-  {filteredPosts.length === 0 ? (
-    <p>Nenhum post encontrado deste autor.</p>
-  ) : (
-    <ul>
-      {filteredPosts.map((post: any) => (
-        <li class="mb-2">
-          <a href={`/post/${post.slug}`}>{post.title}</a>
-        </li>
-      ))}
-    </ul>
-  )}
+    <h1 class="text-3xl font-bold mb-2">
+      Autor: {author.name}
+    </h1>
+
+    {author.bio && (
+      <p class="mb-6">{author.bio}</p>
+    )}
+
+    {filteredPosts.length === 0 ? (
+      <p>Nenhum post encontrado deste autor.</p>
+    ) : (
+      <ul class="space-y-3">
+        {filteredPosts.map((post: any) => (
+          <li>
+            <a href={`/post/${post.slug}`}>
+              {post.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+  </section>
 </BaseLayout>
